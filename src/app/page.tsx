@@ -297,10 +297,18 @@ export default function OvernightWeeklyPlanner() {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedMeeting, setSelectedMeeting] = useState<Planned | null>(null);
   const [metaModalOpen, setMetaModalOpen] = useState(false);
-
+  const emptyPlanned: Planned = {
+    id: "",
+    type: "1on1",
+    startMin: 0,
+    endMin: 0,
+    employeeId: "",
+    title: "",
+  };
   // New state for meeting details modal
   const [meetingDetailsModalOpen, setMeetingDetailsModalOpen] = useState(false);
-  const [selectedMeetingBlock, setSelectedMeetingBlock] = useState<any>(null);
+  const [selectedMeetingBlock, setSelectedMeetingBlock] =
+    useState<Planned>(emptyPlanned);
   const [meetingMeta, setMeetingMeta] = useState<Record<string, MeetingMeta>>(
     {}
   );
@@ -1919,7 +1927,7 @@ export default function OvernightWeeklyPlanner() {
                       if (b.type === "1on1") {
                         const color = colorFor(b.empId!);
                         const hasMetadata = meetingMeta[b.id];
-                        let a = {
+                        const a = {
                           id: b.id,
                           type: b.type,
                           attendeeIds: b.attendees ? b.attendees : [b.empId],
@@ -1966,6 +1974,15 @@ export default function OvernightWeeklyPlanner() {
 
                       // team block
                       const hasMetadata = meetingMeta[b.id];
+                      const a = {
+                        id: b.id,
+                        type: b.type,
+                        attendeeIds: b.attendees!,
+                        title: b.type,
+                        startMin: b.start,
+                        endMin: b.end,
+                        employeeId: b.empId!,
+                      };
                       return (
                         <div
                           key={b.id}
@@ -1974,7 +1991,7 @@ export default function OvernightWeeklyPlanner() {
                           title={`Team ${fmtHHMM(b.start)}–${fmtHHMM(b.end)}`}
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleMeetingClick(b);
+                            handleMeetingClick(a);
                           }}
                         >
                           {/* Attendee swatches: wrap + shrink */}
