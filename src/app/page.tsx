@@ -1,11 +1,8 @@
 "use client";
 import {
   Employee,
-  ShiftAbs,
-  Interval,
   OneOnOne,
   Planned,
-  OneOnOneStrategy,
   PresetKey,
   SHIFT_PRESETS,
   AVAIL_PRESETS,
@@ -38,31 +35,13 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-import {
-  dayTimeToAbs,
-  uid,
-  hhmmToMins,
-  intersect,
-  toAbsInterval,
-  sliceIntoSlots,
-  fmtHHMM,
-} from "../lib/time";
-import {
-  minutesOf,
-  overlapsAny,
-  overlapsByEmployee,
-  overlapsByEmployee_WithBreaks,
-  availabilityStats,
-  respectsBuffer,
-  expandManagerWindowsAbs,
-  countDayMeetings,
-} from "../lib/availability";
+import { dayTimeToAbs, uid, hhmmToMins, fmtHHMM } from "../lib/time";
+import { expandManagerWindowsAbs } from "../lib/availability";
 import {
   optimizeTeamWeekWeighted as optimizeTeamWeek,
   optimizeOneOnOnesScarcity as optimizeOneOnOnes,
   optimizeScramble,
 } from "../lib/optimize";
-import { em } from "framer-motion/client";
 
 /* ======================= Meeting Modal Component ======================= */
 const MeetingModal = ({
