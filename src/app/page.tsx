@@ -53,7 +53,7 @@ const MeetingModal = ({
   nameById,
   existingMetadata,
 }: {
-  meeting: any;
+  meeting: Planned;
   isOpen: boolean;
   onClose: () => void;
   onSave: (details: MeetingMeta) => void;
@@ -66,8 +66,8 @@ const MeetingModal = ({
     notes: "",
     agenda: "",
     status: "scheduled",
-    actualStartMin: meeting?.start || 0,
-    actualEndMin: meeting?.end || 0,
+    actualStartMin: meeting?.startMin || 0,
+    actualEndMin: meeting?.endMin || 0,
     tags: [],
     rating: 3,
   });
@@ -79,8 +79,8 @@ const MeetingModal = ({
         notes: existingMetadata?.notes || "",
         agenda: existingMetadata?.agenda || "",
         status: existingMetadata?.status || "scheduled",
-        actualStartMin: existingMetadata?.actualStartMin || meeting.start,
-        actualEndMin: existingMetadata?.actualEndMin || meeting.end,
+        actualStartMin: existingMetadata?.actualStartMin || meeting.startMin,
+        actualEndMin: existingMetadata?.actualEndMin || meeting.endMin,
         tags: existingMetadata?.tags || [],
         rating: existingMetadata?.rating || 3,
       });
@@ -96,8 +96,8 @@ const MeetingModal = ({
 
   const is1on1 = meeting.type === "1on1";
   const attendeeNames = is1on1
-    ? [nameById(meeting.empId)]
-    : meeting.attendees.map(nameById);
+    ? [nameById(meeting.employeeId)]
+    : meeting.attendeeIds.map(nameById);
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -119,7 +119,7 @@ const MeetingModal = ({
                   {is1on1 ? "1-on-1 Meeting" : "Team Meeting"}
                 </h2>
                 <p className="text-sm text-gray-500 mt-1">
-                  {fmtHHMM(meeting.start)} – {fmtHHMM(meeting.end)}
+                  {fmtHHMM(meeting.startMin)} – {fmtHHMM(meeting.endMin)}
                 </p>
               </div>
             </div>
@@ -147,8 +147,8 @@ const MeetingModal = ({
                     className="w-2.5 h-2.5 rounded-full"
                     style={{
                       backgroundColor: is1on1
-                        ? colorFor(meeting.empId)
-                        : colorFor(meeting.attendees[idx]),
+                        ? colorFor(meeting.employeeId)
+                        : colorFor(meeting.attendeeIds[idx]),
                     }}
                   />
                   <span className="text-sm font-medium text-gray-900">
@@ -189,7 +189,7 @@ const MeetingModal = ({
                     type="button"
                     onClick={() => setDetails({ ...details, rating: star })}
                     className={`w-8 h-8 rounded-lg transition-colors ${
-                      star <= details.rating
+                      star <= details.rating!
                         ? "bg-yellow-400 text-white"
                         : "bg-gray-200 hover:bg-gray-300 text-gray-400"
                     }`}
@@ -206,7 +206,7 @@ const MeetingModal = ({
               Tags
             </label>
             <input
-              value={details.tags.join(", ")}
+              value={details.tags!.join(", ")}
               onChange={(e) =>
                 setDetails({
                   ...details,
@@ -1936,9 +1936,9 @@ export default function OvernightWeeklyPlanner() {
                                 <div className="flex items-center gap-1 text-yellow-300 text-xs">
                                   {hasMetadata.rating &&
                                     "★".repeat(hasMetadata.rating)}
-                                  {hasMetadata.tags.length > 0 && (
+                                  {hasMetadata.tags!.length > 0 && (
                                     <span className="opacity-75">
-                                      #{hasMetadata.tags.length}
+                                      #{hasMetadata.tags!.length}
                                     </span>
                                   )}
                                 </div>
