@@ -1,11 +1,8 @@
 // lib/optimize.ts
 import { Employee, Interval, OneOnOne, Planned, TeamSession } from "./types";
-import {
-  availabilityByEmployee,
-  expandManagerWindowsAbs,
-} from "./availability";
+import { availabilityByEmployee } from "./availability";
 import { sliceInto, overlaps, sameDay } from "./time";
-import { MINUTES_IN_DAY } from "./types";
+
 import { uid } from "./time";
 
 // scarcity metrics

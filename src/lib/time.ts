@@ -1,5 +1,5 @@
 // lib/time.ts
-import { Day, Interval, MINUTES_IN_DAY, Planned } from "./types";
+import { Day, Interval, MINUTES_IN_DAY } from "./types";
 
 export const uid = (p = "id") =>
   `${p}_${Math.random().toString(36).slice(2, 9)}`;

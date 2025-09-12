@@ -42,6 +42,7 @@ import {
   optimizeOneOnOnesScarcity as optimizeOneOnOnes,
   optimizeScramble,
 } from "../lib/optimize";
+import { MeetingStatus } from "../lib/types";
 
 /* ======================= Meeting Modal Component ======================= */
 const MeetingModal = ({
@@ -167,7 +168,10 @@ const MeetingModal = ({
               <select
                 value={details.status}
                 onChange={(e) =>
-                  setDetails({ ...details, status: e.target.value as any })
+                  setDetails({
+                    ...details,
+                    status: e.target.value as MeetingStatus | undefined,
+                  })
                 }
                 className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
               >
@@ -418,7 +422,7 @@ export default function OvernightWeeklyPlanner() {
   };
 
   // New handlers for meeting details modal
-  const handleMeetingClick = (meetingBlock: any) => {
+  const handleMeetingClick = (meetingBlock: Planned) => {
     setSelectedMeetingBlock(meetingBlock);
     setMeetingDetailsModalOpen(true);
   };
@@ -1915,6 +1919,15 @@ export default function OvernightWeeklyPlanner() {
                       if (b.type === "1on1") {
                         const color = colorFor(b.empId!);
                         const hasMetadata = meetingMeta[b.id];
+                        let a = {
+                          id: b.id,
+                          type: b.type,
+                          attendeeIds: b.attendees ? b.attendees : [b.empId],
+                          title: b.type,
+                          startMin: b.start,
+                          endMin: b.end,
+                          employeeId: b.empId!,
+                        };
                         return (
                           <div
                             key={b.id}
@@ -1925,7 +1938,7 @@ export default function OvernightWeeklyPlanner() {
                             )}–${fmtHHMM(b.end)}`}
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleMeetingClick(b);
+                              handleMeetingClick(a);
                             }}
                           >
                             <div className="flex items-center justify-between">
