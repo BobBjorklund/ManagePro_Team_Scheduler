@@ -789,7 +789,7 @@ export default function OvernightWeeklyPlanner() {
       return { id: e.id, name: e.name, oneCount, teamCount, conversations };
     });
   }, [employees, plan]);
-  const HOUR_PX = 48; // pixels per hour (tweak to taste)
+  const HOUR_PX = 32; // pixels per hour (tweak to taste)
   const DAY_HEIGHT = HOUR_PX * 24; // 24h vertical grid
 
   // Stable color per employee (HSL by id)
