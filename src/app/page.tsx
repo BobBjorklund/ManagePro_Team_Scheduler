@@ -1056,15 +1056,22 @@ export default function OvernightWeeklyPlanner() {
   /* === Render === */
   return (
     <>
+      <header
+        className="fixed flex items-center gap-3 w-full p-4 text-white z-50"
+        style={{ backgroundColor: "#0472B4" }}
+      >
+        {/*  */}
+        <img
+          src="/theone.png"
+          className="inset-0 -z-10 object-cover mix-blend-multiply"
+          style={{ width: "32px", height: "32px" }}
+        />
+        <CalendarIcon className="w-6 h-6" />
+        <h1 className="text-2xl font-semibold">Meeting Planner</h1>
+      </header>
       <div className="p-7 mx-auto w-full max-w">
-        <header className="flex items-center gap-3 mb-6">
-          <CalendarIcon className="w-6 h-6" />
-          <h1 className="text-2xl font-semibold">
-            Overnight-Friendly Weekly Planner
-          </h1>
-        </header>
         <details
-          className="rounded-2xl border bg-white shadow mb-6"
+          className="rounded-2xl border bg-white shadow mt-16 mb-6"
           open={configOpen}
           onToggle={(e) =>
             setConfigOpen((e.currentTarget as HTMLDetailsElement).open)
