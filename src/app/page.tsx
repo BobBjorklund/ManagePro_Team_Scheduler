@@ -1910,7 +1910,7 @@ export default function OvernightWeeklyPlanner() {
                       return (
                         <div
                           key={`avail-${day}-${i}`}
-                          className="absolute inset-x-1 rounded-md pointer-events-none"
+                          className="absolute rounded-md pointer-events-none"
                           style={{ top, height }}
                         >
                           <div className="h-full w-full rounded-md ring-2 ring-sky-500/70 bg-transparent" />
