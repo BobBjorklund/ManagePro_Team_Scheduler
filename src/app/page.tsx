@@ -806,36 +806,28 @@ export default function OvernightWeeklyPlanner() {
   }
   const onRemoveMeeting = (id: string) =>
     setPlan((prev) => prev.filter((x) => x.id !== id));
-  function formatWeekStartLabel(d: Date) {
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, "0");
-    const dd = String(d.getDate()).padStart(2, "0");
-    return `${yyyy}-${mm}-${dd}`;
+  function toHHMM(mins: number) {
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
   }
 
-  function pickWeekStartDate(): Date {
-    // Prompt is consistent with how the rest of the page gathers inputs
-    const input =
-      typeof window !== "undefined"
-        ? window.prompt(
-            "Week start date (YYYY-MM-DD)?  Leave blank to use most recent Sunday."
-          )
-        : null;
-
-    let base = new Date();
-    base.setHours(0, 0, 0, 0);
-
-    if (input && /^\d{4}-\d{2}-\d{2}$/.test(input)) {
-      const parsed = new Date(`${input}T00:00:00`);
-      if (!Number.isNaN(parsed.getTime())) return parsed;
-    }
-    // Most recent Sunday (assuming DAY_NAMES[0] === "Sun")
-    const day = base.getDay(); // 0..6 (0 = Sun)
-    base.setDate(base.getDate() - day);
-    return base;
+  function mostRecentSunday(ref = new Date()) {
+    const d = new Date(ref);
+    d.setHours(0, 0, 0, 0);
+    const delta = d.getDay(); // 0=Sun..6=Sat
+    d.setDate(d.getDate() - delta);
+    return d;
   }
 
-  function dateLabelForDay(weekStart: Date, day: Day) {
+  function isoDate(d: Date) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  }
+
+  function dayLabel(weekStart: Date, day: Day) {
     const d = new Date(weekStart);
     d.setDate(d.getDate() + day);
     return d.toLocaleDateString(undefined, {
@@ -859,43 +851,41 @@ export default function OvernightWeeklyPlanner() {
   }
 
   function exportSchedule() {
-    // Choose week start (or default to most recent Sunday)
-    const weekStart = pickWeekStartDate();
-    const weekStartLabel = formatWeekStartLabel(weekStart);
+    // Use most recent Sunday as the start of the week
+    const weekStart = mostRecentSunday();
+    const weekStartIso = isoDate(weekStart);
 
-    // Build per-day sections from already-sliced blocks
-    // (managerBlocksByDay[day] entries are minutes-from-midnight)
     const lines: string[] = [];
-    for (let day = 0 as Day; day < 7; day = ((day + 1) % 7) as Day) {
+
+    // NOTE: no %7 here — we actually need to reach 7 and exit
+    for (let day = 0 as Day; day < 7; day = (day + 1) as Day) {
       const blocks = managerBlocksByDay[day] ?? [];
       if (!blocks.length) continue;
 
-      const dateLabel = dateLabelForDay(weekStart, day);
+      const dateStr = dayLabel(weekStart, day);
 
-      // 1:1s
       const ones = blocks
         .filter((b) => b.type === "1on1" && b.empId)
         .map((b) => ({
           name: nameById(b.empId!),
-          start: fmtHHMM(b.start),
-          end: fmtHHMM(b.end),
+          start: toHHMM(b.start),
+          end: toHHMM(b.end),
         }))
         .sort((a, b) => (a.start < b.start ? -1 : a.start > b.start ? 1 : 0));
 
-      // Teams
       const teams = blocks
         .filter((b) => b.type === "team" && (b.attendees?.length ?? 0) > 0)
         .map((b) => ({
-          start: fmtHHMM(b.start),
-          end: fmtHHMM(b.end),
+          start: toHHMM(b.start),
+          end: toHHMM(b.end),
           attendees: (b.attendees ?? []).map((id) => nameById(id)),
         }))
         .sort((a, b) => (a.start < b.start ? -1 : a.start > b.start ? 1 : 0));
 
-      if (ones.length === 0 && teams.length === 0) continue;
+      if (!ones.length && !teams.length) continue;
 
       lines.push(
-        `on ${dateLabel} Please schedule the following in 1 on 1 conversations:`
+        `on ${dateStr} Please schedule the following in 1 on 1 conversations:`
       );
 
       if (ones.length) {
@@ -910,19 +900,21 @@ export default function OvernightWeeklyPlanner() {
       if (teams.length) {
         lines.push("");
         lines.push("ALSO, please schedule the following team meetings:");
-        const header = ["Time In", "Time Out", "Attendees"];
-        const pad = (s: string, w: number) => s.padEnd(w);
+
+        const headerIn = "Time In";
+        const headerOut = "Time Out";
         const inCol = Math.max(
-          header[0].length,
+          headerIn.length,
           ...teams.map((t) => t.start.length)
         );
         const outCol = Math.max(
-          header[1].length,
+          headerOut.length,
           ...teams.map((t) => t.end.length)
         );
+        const pad = (s: string, w: number) => s.padEnd(w);
 
         lines.push(
-          `${pad(header[0], inCol)}  ${pad(header[1], outCol)}  ${header[2]}`
+          `${pad(headerIn, inCol)}  ${pad(headerOut, outCol)}  Attendees`
         );
         teams.forEach((t) => {
           lines.push(
@@ -936,14 +928,13 @@ export default function OvernightWeeklyPlanner() {
       lines.push(""); // blank line between days
     }
 
-    const output =
+    const contents =
       lines.length > 0
         ? lines.join("\n")
-        : `No meetings planned for the week starting ${weekStartLabel}.`;
+        : `No meetings planned for the week starting ${weekStartIso}.`;
 
-    downloadTextFile(`schedule-${weekStartLabel}.txt`, output);
+    downloadTextFile(`schedule-${weekStartIso}.txt`, contents);
   }
-
   /* === Render === */
   return (
     <>
