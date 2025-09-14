@@ -4,7 +4,7 @@
 "use client";
 import React from "react";
 import { Users, User, X } from "lucide-react";
-import type { MeetingMeta, Planned } from "../lib/types";
+import type { MeetingMeta, Planned, OneOnOne, TeamSession } from "../lib/types";
 import type { MeetingStatus } from "../lib/types";
 import { fmtHHMM } from "../lib/time";
 
@@ -58,9 +58,12 @@ export function MeetingModal({
   if (!isOpen || !meeting) return null;
 
   const is1on1 = meeting.type === "1on1";
-  const attendeeNames = is1on1
-    ? [nameById((meeting as any).employeeId)]
-    : (meeting as any).attendeeIds.map((id: string) => nameById(id));
+  const teamIds: string[] = !is1on1
+    ? (meeting as TeamSession).attendeeIds ?? []
+    : [];
+  const attendeeNames: string[] = is1on1
+    ? [nameById((meeting as OneOnOne).employeeId)]
+    : teamIds.map((id) => nameById(id));
 
   const handleSave = () => {
     onSave(details);
@@ -106,7 +109,7 @@ export function MeetingModal({
               Attendees
             </div>
             <div className="flex flex-wrap gap-2">
-              {attendeeNames.map((name: string, idx: number) => (
+              {attendeeNames.map((name, idx) => (
                 <div
                   key={idx}
                   className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white border border-gray-200 shadow-sm"
@@ -115,8 +118,8 @@ export function MeetingModal({
                     className="w-2.5 h-2.5 rounded-full"
                     style={{
                       backgroundColor: is1on1
-                        ? colorFor((meeting as any).employeeId)
-                        : colorFor((meeting as any).attendeeIds[idx]),
+                        ? colorFor((meeting as OneOnOne).employeeId)
+                        : colorFor(teamIds[idx]),
                     }}
                   />
                   <span className="text-sm font-medium text-gray-900">
@@ -134,7 +137,7 @@ export function MeetingModal({
               </label>
               <select
                 value={details.status}
-                onChange={(e) =>
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                   setDetails({
                     ...details,
                     status: e.target.value as MeetingStatus | undefined,
@@ -178,7 +181,7 @@ export function MeetingModal({
             </label>
             <input
               value={(details.tags ?? []).join(", ")}
-              onChange={(e) =>
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setDetails({
                   ...details,
                   tags: e.target.value
@@ -198,7 +201,7 @@ export function MeetingModal({
             </label>
             <textarea
               value={details.agenda}
-              onChange={(e) =>
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                 setDetails({ ...details, agenda: e.target.value })
               }
               placeholder="Key topics to discuss..."
@@ -213,7 +216,7 @@ export function MeetingModal({
             </label>
             <textarea
               value={details.notes}
-              onChange={(e) =>
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                 setDetails({ ...details, notes: e.target.value })
               }
               placeholder="Meeting outcomes, action items..."
