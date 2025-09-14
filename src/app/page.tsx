@@ -8,7 +8,7 @@ import {
   Users,
   Settings,
 } from "lucide-react";
-
+import { ImportExport } from "../components/ImportExport";
 import {
   Employee,
   OneOnOne,
@@ -829,6 +829,35 @@ export default function OvernightWeeklyPlanner() {
               <Users className="w-4 h-4" />
               <span className="hidden sm:inline">New Team Meeting</span>
             </button>
+            <ImportExport
+              getState={() => ({
+                employees,
+                managerWindows,
+                meetingMeta,
+                settings: {
+                  mode,
+                  slotMinutes,
+                  bufferMinutes,
+                  maxPerDay,
+                  sessionMinutes,
+                  targetConversations,
+                },
+                plan,
+              })}
+              onImport={(s) => {
+                setEmployees(s.employees ?? []);
+                setManagerWindows(s.managerWindows ?? []);
+                setMeetingMeta(s.meetingMeta ?? {});
+                setMode(s.settings?.mode ?? "1on1");
+                setSlotMinutes(s.settings?.slotMinutes ?? 30);
+                setBufferMinutes(s.settings?.bufferMinutes ?? 15);
+                setMaxPerDay(s.settings?.maxPerDay ?? 5);
+                setSessionMinutes(s.settings?.sessionMinutes ?? 45);
+                setTargetConversations(s.settings?.targetConversations ?? 1);
+                setPlan(s.plan ?? []);
+                // your existing useEffect will persist this to localStorage automatically
+              }}
+            />
           </>
         }
       />
