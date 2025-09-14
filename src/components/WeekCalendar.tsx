@@ -88,7 +88,7 @@ const WeekCalendar: React.FC<Props> = ({
               const managerSegmentsToday = managerAvailByDay[dayIdx] ?? [];
               if (
                 managerSegmentsToday.length <= 0 ||
-                managerSegmentsToday[0].start > 420
+                managerSegmentsToday[0].start > 1379
               ) {
                 return null;
               }
