@@ -150,3 +150,6 @@ details.collapsible .chev {
 details.collapsible[open] .chev {
   transform: rotate(180deg);
 }
+.focusable-border:hover {
+  background-color: rgba(0, 0, 0, 1);
+}
