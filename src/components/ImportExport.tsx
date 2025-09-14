@@ -39,8 +39,8 @@ export const ImportExport: React.FC<Props> = ({
       const text = await file.text();
       const state = await parseImport(text);
       onImport(state);
-    } catch (err: any) {
-      alert(`Failed to import: ${err?.message ?? err}`);
+    } catch (err: unknown | Error) {
+      alert(`Failed to import: ${err}`);
     } finally {
       setBusy(false);
       e.target.value = ""; // allow re-selecting same file
