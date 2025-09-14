@@ -6,6 +6,7 @@ import {
   MINUTES_IN_DAY,
   TeamSession,
   Planned,
+  MeetingMeta,
 } from "@/lib/types";
 import { fmtHHMM } from "@/lib/time";
 import { Swatch } from "./ui/Swatch";
@@ -28,7 +29,7 @@ type Props = {
   managerBlocksByDay: Array<Block[]>;
 
   colorFor: (id: string) => string;
-  meetingMeta: Record<string, any>;
+  meetingMeta: Record<string, MeetingMeta>;
   nameById: (id: string) => string;
 
   HOUR_PX?: number;
