@@ -819,7 +819,11 @@ export default function OvernightWeeklyPlanner() {
     d.setDate(d.getDate() - delta);
     return d;
   }
-
+  function goto(event: React.MouseEvent<HTMLButtonElement>) {
+    if (typeof window !== "undefined") {
+      window.location.href = "./supervisors/";
+    }
+  }
   function isoDate(d: Date) {
     const y = d.getFullYear();
     const m = String(d.getMonth() + 1).padStart(2, "0");
@@ -942,7 +946,7 @@ export default function OvernightWeeklyPlanner() {
         title="Meeting Planner"
         PageIcon={<CalendarIcon className="w-6 h-6" />}
         RightSideActions={
-          <>
+          <><button onClick={(event) => goto(event)} className="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition flex items-center gap-1"><span className="hidden sm:inline">Rankings</span></button>
             <button
               onClick={addManualOneOnOne}
               className="px-3 py-2 rounded-lg bg-black/30 hover:bg-black/40 transition flex items-center gap-1"
