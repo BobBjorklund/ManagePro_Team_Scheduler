@@ -812,11 +812,11 @@ export default function OvernightWeeklyPlanner() {
     return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
   }
 
-  function mostRecentSunday(ref = new Date()) {
+  function nextSunday(ref = new Date()) {
     const d = new Date(ref);
     d.setHours(0, 0, 0, 0);
     const delta = d.getDay(); // 0=Sun..6=Sat
-    d.setDate(d.getDate() - delta);
+    d.setDate(d.getDate() - delta + 7);
     return d;
   }
   function goto(event: React.MouseEvent<HTMLButtonElement>) {
@@ -856,7 +856,7 @@ export default function OvernightWeeklyPlanner() {
 
   function exportSchedule() {
     // Use most recent Sunday as the start of the week
-    const weekStart = mostRecentSunday();
+    const weekStart = nextSunday();
     const weekStartIso = isoDate(weekStart);
 
     const lines: string[] = [];
@@ -946,7 +946,13 @@ export default function OvernightWeeklyPlanner() {
         title="Meeting Planner"
         PageIcon={<CalendarIcon className="w-6 h-6" />}
         RightSideActions={
-          <><button onClick={(event) => goto(event)} className="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition flex items-center gap-1"><span className="hidden sm:inline">Rankings</span></button>
+          <>
+            <button
+              onClick={(event) => goto(event)}
+              className="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition flex items-center gap-1"
+            >
+              <span className="hidden sm:inline">Rankings</span>
+            </button>
             <button
               onClick={addManualOneOnOne}
               className="px-3 py-2 rounded-lg bg-black/30 hover:bg-black/40 transition flex items-center gap-1"
